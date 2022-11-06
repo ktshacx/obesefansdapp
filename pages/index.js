@@ -265,7 +265,7 @@ export default function Home() {
               </Box>
                 : <Button colorScheme={'cyan'} mt={'10px'} width={'100%'} onClick={claim} disabled={textError || isLoading} isLoading={isLoading}>Claim</Button>}
 
-              <Text fontWeight={'thin'} mt={'20px'}><b>Your Balance:</b> {numberWithCommas((contribution / 10 ** 18) * price)} $KCAL</Text>
+              <Text fontWeight={'thin'} mt={'20px'}><b>Your Balance:</b> {numberWithCommas(((contribution / 10 ** 18) * price).toFixed(2))} $KCAL</Text>
               <Text fontWeight={'thin'}>You can claim token after presale</Text>
             </Box> : <Button colorScheme={'orange'} mt={'10px'} width={'100%'} onClick={connect}>Connect Metamask</Button>}
           </Box>
