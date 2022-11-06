@@ -28,6 +28,8 @@ export default function Home() {
   const [balance, setBalance] = useState(0);
   const [kcalBalance, setKcalBalance] = useState(0);
   const [contribution, setContribution] = useState(0);
+  const [time, setTime] = useState();
+  const [current, setCurrent] = useState();
 
   const [kcal, setKcal] = useState(0);
   const [bnb, setBnb] = useState(0);
@@ -38,6 +40,17 @@ export default function Home() {
   const address = "0x9f4E15A2958eB69A56cD6453A8Dfdd9cf49F8C94";
 
   async function connect() {
+    if(active) {
+      try {
+        library.currentProvider.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: library.utils.toHex(97) }],
+        })
+      }catch(e) {
+        console.log(e)
+      }
+      return;
+    }
     try {
       activate(Injected, undefined, true);
     } catch (ex) {
@@ -53,6 +66,7 @@ export default function Home() {
 
     if(chainId != 97){
       setError("Please connect to Binance Testnet !!");
+      onOpen()
       try {
         library.currentProvider.request({
           method: 'wallet_switchEthereumChain',
@@ -67,7 +81,7 @@ export default function Home() {
         var balance = await library.eth.getBalance(account);
         setBalance(balance);
       })()
-      console.log(balance)
+
       try {
         const contract = new library.eth.Contract(presale_abi, address);
         setContract(contract);
@@ -86,11 +100,18 @@ export default function Home() {
         contract.methods.checkContribution(account).call().then(res => {
           setContribution(res);
         })
+        contract.methods.endICO().call().then(res => {
+          setTime(res);
+        })
       }catch(e){
         console.log(e)
       }
     }
-  }, [chainId])
+  }, [chainId, account])
+
+  useEffect(() => {
+    setCurrent(Date.now() / 1000)
+  })
 
   useEffect(() => {
     if(balance / (10 ** 18) < kcal / price) {
@@ -133,7 +154,10 @@ export default function Home() {
 
   return (
     <div>
-      <Box p={'10px'} fontSize={'20px'} display={'flex'} justifyContent={'space-between'}>ObeseFans <Text onClick={active ? deactivate : connect} width={['150px', 'auto', 'auto']} overflow={'hidden'} whiteSpace={'nowrap'} textOverflow={'ellipsis'} padding={'10px'} background={'gray.700'} borderRadius={'xl'} fontSize={'15px'} _hover={{backgroundColor: 'gray.600'}} cursor={'pointer'}>{active ? account : "Connect"}</Text></Box>
+      <Head>
+        <title>ObeseFans Presale DAPP</title>
+      </Head>
+      <Box p={'10px'} fontSize={'20px'} display={'flex'} justifyContent={'space-between'}>ObeseFans <Text onClick={active ? deactivate : connect} width={['150px', 'auto', 'auto']} overflow={'hidden'} whiteSpace={'nowrap'} textOverflow={'ellipsis'} padding={'10px'} background={'gray.700'} borderRadius={'xl'} fontSize={'15px'} _hover={{backgroundColor: 'gray.600'}} cursor={'pointer'} display={'flex'} justifyContent={'center'} alignItems={'center'}><Image src="https://cdn3d.iconscout.com/3d/premium/thumb/binance-bnb-coin-4722067-3918006.png" width={'30px'} ml={'10px'}></Image>{active ? (balance / (10 ** 18)).toFixed(3) + " BNB" : "Connect"}</Text></Box>
       {error ? <Alert status='error'>
         <AlertIcon/>
         <AlertDescription>{error}</AlertDescription>
@@ -150,6 +174,7 @@ export default function Home() {
             <Text fontWeight={600} fontSize={'20px'}>1 $KCAL = $0.0075</Text>
             <Text color={'gray.400'} fontSize={'15px'} fontWeight={'light'}>Buy before it sells out</Text>
             {active && chainId == 97 ? <Box mt={'20px'}>
+            <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}><b>Time Left</b>: {new Date((time - current).toFixed(0) * 1000).toISOString().substr(11, 8)}</Text>
               <Progress value={(((weiRaised / 10 ** 18) * price) / 100000000) * 100} size='lg' colorScheme='cyan' borderRadius={'lg'}/>
               <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>{(weiRaised / 10 ** 18).toFixed(2)} BNB / {hardCap / 10 ** 18} BNB</Text>
               <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>{(weiRaised / 10 ** 18) * price} $KCAL / 100,000,000 $KCAL</Text>
@@ -173,7 +198,7 @@ export default function Home() {
               </FormControl>
 
               <Button colorScheme={'cyan'} mt={'10px'} width={'100%'} onClick={buy} disabled={textError || isLoading} isLoading={isLoading}>Buy $KCAL</Button>
-              <Text fontWeight={'thin'}><b>Your Balance:</b> {(contribution / 10 ** 18) * price} $KCAL</Text>
+              <Text fontWeight={'thin'} mt={'20px'}><b>Your Balance:</b> {(contribution / 10 ** 18) * price} $KCAL</Text>
               <Text fontWeight={'thin'}>You can claim token after presale</Text>
             </Box> : <Button colorScheme={'orange'} mt={'10px'} width={'100%'} onClick={connect}>Connect Metamask</Button>}
           </Box>
