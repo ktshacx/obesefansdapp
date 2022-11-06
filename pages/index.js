@@ -74,10 +74,16 @@ export default function Home() {
       }
       return;
     }
+
+    if(!window.ethereum) {
+      setError("Please install an ethereum enabled wallet.")
+      onOpen();
+    }
+
     try {
-      activate(Injected, undefined, true);
+      activate(Injected)
     } catch (ex) {
-      console.error(ex)
+      console.log(ex)
     }
   }
 
