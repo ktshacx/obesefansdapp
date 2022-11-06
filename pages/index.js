@@ -1,12 +1,35 @@
-import { Box, Button, Text, Image, Alert, AlertIcon, CircularProgress, CircularProgressLabel, Skeleton, SkeletonText, Link, AlertTitle, AlertDescription, FormControl, FormLabel, Input, Progress, AlertDialog,
+import {
+  Box, 
+  Button, 
+  Text, 
+  Image, 
+  Alert, 
+  AlertIcon, 
+  CircularProgress, 
+  CircularProgressLabel, 
+  Skeleton, 
+  SkeletonText, 
+  Link, 
+  AlertTitle, 
+  AlertDescription, 
+  FormControl, 
+  FormLabel, 
+  Input, 
+  Progress, 
+  AlertDialog,
   AlertDialogBody,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogContent,
-  AlertDialogOverlay, 
-  useDisclosure} from '@chakra-ui/react';
+  AlertDialogOverlay,
+  useDisclosure
+} from '@chakra-ui/react';
 import Head from 'next/head';
-import { useEffect, useRef, useState } from 'react';
+import { 
+  useEffect, 
+  useRef, 
+  useState 
+} from 'react';
 import styles from '../styles/Home.module.css';
 import { InjectedConnector } from '@web3-react/injected-connector';
 import { Injected } from '../connector/Injected';
@@ -17,19 +40,19 @@ import web3 from "web3";
 export default function Home() {
   const { active, account, library, activate, deactivate, chainId } = useWeb3React();
 
-  const [error, setError] = useState();
-  const [textError, setTextError] = useState();
-  const [success, setSuccess] = useState();
+  const [error, setError] = useState(null);
+  const [textError, setTextError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const [isLoading, setLoading] = useState(false);
-  const [price, setPrice] = useState();
-  const [weiRaised, setWeiRaised] = useState();
-  const [hardCap, setHardCap] = useState();
-  const [contract, setContract] = useState();
+  const [price, setPrice] = useState(0);
+  const [weiRaised, setWeiRaised] = useState(0);
+  const [hardCap, setHardCap] = useState(0);
+  const [contract, setContract] = useState([]);
   const [balance, setBalance] = useState(0);
   const [kcalBalance, setKcalBalance] = useState(0);
   const [contribution, setContribution] = useState(0);
-  const [time, setTime] = useState();
-  const [current, setCurrent] = useState();
+  const [time, setTime] = useState(0);
+  const [current, setCurrent] = useState(0);
 
   const [kcal, setKcal] = useState(0);
   const [bnb, setBnb] = useState(0);
@@ -40,13 +63,13 @@ export default function Home() {
   const address = "0x9f4E15A2958eB69A56cD6453A8Dfdd9cf49F8C94";
 
   async function connect() {
-    if(active) {
+    if (active) {
       try {
         library.currentProvider.request({
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: library.utils.toHex(97) }],
         })
-      }catch(e) {
+      } catch (e) {
         console.log(e)
       }
       return;
@@ -59,12 +82,12 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if(!account){
+    if (!account) {
       return;
     }
 
 
-    if(chainId != 97){
+    if (chainId != 97) {
       setError("Please connect to Binance Testnet !!");
       onOpen()
       try {
@@ -72,10 +95,10 @@ export default function Home() {
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: library.utils.toHex(97) }],
         })
-      }catch(e) {
+      } catch (e) {
         console.log(e)
       }
-    }else{
+    } else {
       setError(null);
       (async () => {
         var balance = await library.eth.getBalance(account);
@@ -103,7 +126,7 @@ export default function Home() {
         contract.methods.endICO().call().then(res => {
           setTime(res);
         })
-      }catch(e){
+      } catch (e) {
         console.log(e)
       }
     }
@@ -114,42 +137,42 @@ export default function Home() {
   })
 
   useEffect(() => {
-    if(balance / (10 ** 18) < kcal / price) {
+    if (balance / (10 ** 18) < kcal / price) {
       setTextError('Insufficient Balance');
-    }else{
+    } else {
       setTextError(null);
     }
   }, [bnb])
 
   function buy() {
-    if(kcal < 10) {
-      setTextError('$KCAL must be greater than 10')
+    if (kcal < 500) {
+      setTextError('$KCAL must be greater than 500')
       return;
-    }else{
+    } else {
       setTextError(null);
     }
 
-    if(bnb > 10) {
+    if (bnb > 10) {
       setTextError('$KCAL must be less than 466850');
       return;
-    }else{
+    } else {
       setTextError(null);
     }
     setLoading(true);
-    contract.methods.buyTokens(account).send({from: account, value: Math.floor(bnb * 10 ** 18)})
-    .on('receipt', receipt => {
-      setSuccess('Successfully bought $KCAL worth ' + bnb + ' BNB');
-      onOpen();
-      contract.methods.checkContribution(account).call().then(res => {
-        setContribution(res);
+    contract.methods.buyTokens(account).send({ from: account, value: Math.floor(bnb * 10 ** 18) })
+      .on('receipt', receipt => {
+        setSuccess('Successfully bought $KCAL worth ' + bnb + ' BNB');
+        onOpen();
+        contract.methods.checkContribution(account).call().then(res => {
+          setContribution(res);
+        })
+        setLoading(false);
       })
-      setLoading(false);
-    })
-    .on('error', error => {
-      setError(error.message)
-      onOpen();
-      setLoading(false);
-    })
+      .on('error', error => {
+        setError(error.message)
+        onOpen();
+        setLoading(false);
+      })
   }
 
   function numberWithCommas(x) {
@@ -157,17 +180,17 @@ export default function Home() {
   }
 
   function claim() {
-    contract.methods.claimTokens().send({from: account})
-    .on('receipt', receipt => {
-      setSuccess('Successfully claimed token');
-      onOpen();
-      setLoading(false);
-    })
-    .on('error', error => {
-      setError(error.message)
-      onOpen()
-      setLoading(false);
-    })
+    contract.methods.claimTokens().send({ from: account })
+      .on('receipt', receipt => {
+        setSuccess('Successfully claimed token');
+        onOpen();
+        setLoading(false);
+      })
+      .on('error', error => {
+        setError(error.message)
+        onOpen()
+        setLoading(false);
+      })
   }
 
   return (
@@ -175,32 +198,32 @@ export default function Home() {
       <Head>
         <title>ObeseFans Presale DAPP</title>
       </Head>
-      <Box p={'10px'} fontSize={'20px'} display={'flex'} justifyContent={'space-between'}>ObeseFans <Text onClick={active ? deactivate : connect} width={['150px', 'auto', 'auto']} overflow={'hidden'} whiteSpace={'nowrap'} textOverflow={'ellipsis'} padding={'10px'} background={'gray.700'} borderRadius={'xl'} fontSize={'15px'} _hover={{backgroundColor: 'gray.600'}} cursor={'pointer'} display={'flex'} justifyContent={'center'} alignItems={'center'}><Image src="https://cdn3d.iconscout.com/3d/premium/thumb/binance-bnb-coin-4722067-3918006.png" width={'30px'} ml={'10px'}></Image>{active ? (balance / (10 ** 18)).toFixed(3) + " BNB" : "Connect"}</Text></Box>
+      <Box p={'10px'} fontSize={'20px'} display={'flex'} justifyContent={'space-between'}>ObeseFans <Text onClick={active ? deactivate : connect} width={['150px', 'auto', 'auto']} overflow={'hidden'} whiteSpace={'nowrap'} textOverflow={'ellipsis'} padding={'10px'} background={'gray.700'} borderRadius={'xl'} fontSize={'15px'} _hover={{ backgroundColor: 'gray.600' }} cursor={'pointer'} display={'flex'} justifyContent={'center'} alignItems={'center'}><Image src="https://cdn3d.iconscout.com/3d/premium/thumb/binance-bnb-coin-4722067-3918006.png" width={'30px'} mr={'5px'}></Image>{active ? (balance / (10 ** 18)).toFixed(3) + " BNB" : "Connect"}</Text></Box>
       {error ? <Alert status='error'>
-        <AlertIcon/>
+        <AlertIcon />
         <AlertDescription>{error}</AlertDescription>
-      </Alert> : null }
+      </Alert> : null}
       {success ? <Alert status='success'>
-        <AlertIcon/>
+        <AlertIcon />
         <AlertDescription>{success}</AlertDescription>
-      </Alert> : null }
+      </Alert> : null}
       <Box display={'flex'} alignItems={'center'} minH={'90vh'} justifyContent={'center'}>
-        <Box borderRadius={'lg'} bgColor={'gray.700'} minW={'300px'}>
+        <Box borderRadius={'lg'} bgColor={'gray.700'} w={'300px'}>
           <Text fontWeight={600} fontSize={'20px'} background={'cyan.500'} borderRadius={'10px 10px 0px 0px'} p={'10px 20px'}>Private Sale 1</Text>
           <Box display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'} p={'20px'}>
             <Image src='https://obesefans.com/wp-content/uploads/2022/10/bluetext.png' width={'250px'}></Image>
             <Text fontWeight={600} fontSize={'20px'}>1 $KCAL = $0.0075</Text>
             <Text color={'gray.400'} fontSize={'15px'} fontWeight={'light'}>Buy before it sells out</Text>
             {active && chainId == 97 ? <Box mt={'20px'}>
-            <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}><b>Time Left</b>: {new Date((time - current).toFixed(0) * 1000).toISOString().substr(11, 8)}</Text>
-              <Progress value={(((weiRaised / 10 ** 18) * price) / 100000000) * 100} size='lg' colorScheme='cyan' borderRadius={'lg'}/>
+              <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}><b>Time Left</b>: {time && new Date((time - current).toFixed(0) * 1000).toISOString().substr(11, 8)}</Text>
+              <Progress value={(((weiRaised / 10 ** 18) * price) / 100000000) * 100} size='lg' colorScheme='cyan' borderRadius={'lg'} />
               <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>${numberWithCommas((weiRaised / 10 ** 18).toFixed(2) * 350)} / ${numberWithCommas((hardCap / 10 ** 18) * 350)}</Text>
               <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>{numberWithCommas((weiRaised / 10 ** 18) * price)} $KCAL / 100,000,000 $KCAL</Text>
 
               {textError ? <Alert status='error' mt={'10px'} borderRadius={'lg'}>
-                <AlertIcon/>
+                <AlertIcon />
                 <AlertDescription>{textError}</AlertDescription>
-              </Alert> : null }
+              </Alert> : null}
 
               {(time - current) > 0 ? <Box>
                 <FormControl mt={'20px'}>
@@ -208,18 +231,18 @@ export default function Home() {
                   <Input type={'number'} placeholder={'0'} value={kcal} onChange={() => {
                     setKcal(event.target.value);
                     setBnb(event.target.value / price);
-                  }}/>
+                  }} min={0} oninput="this.value = Math.abs(this.value)" />
                 </FormControl>
-                
+
                 <FormControl mt={'10px'}>
                   <FormLabel>Selling (BNB)</FormLabel>
-                  <Input type={'number'} placeholder={'0'} value={bnb}/>
+                  <Input type={'number'} placeholder={'0'} value={bnb} />
                 </FormControl>
 
                 <Button colorScheme={'cyan'} mt={'10px'} width={'100%'} onClick={buy} disabled={textError || isLoading} isLoading={isLoading}>Buy $KCAL</Button>
               </Box>
-              : <Button colorScheme={'cyan'} mt={'10px'} width={'100%'} onClick={claim} disabled={textError || isLoading} isLoading={isLoading}>Claim</Button> }
-              
+                : <Button colorScheme={'cyan'} mt={'10px'} width={'100%'} onClick={claim} disabled={textError || isLoading} isLoading={isLoading}>Claim</Button>}
+
               <Text fontWeight={'thin'} mt={'20px'}><b>Your Balance:</b> {numberWithCommas((contribution / 10 ** 18) * price)} $KCAL</Text>
               <Text fontWeight={'thin'}>You can claim token after presale</Text>
             </Box> : <Button colorScheme={'orange'} mt={'10px'} width={'100%'} onClick={connect}>Connect Metamask</Button>}
@@ -230,9 +253,15 @@ export default function Home() {
         isOpen={isOpen}
         leastDestructiveRef={cancelRef}
         onClose={onClose}
+        closeOnOverlayClick={false}
+        closeOnEsc={false}
       >
         <AlertDialogOverlay>
           <AlertDialogContent>
+            <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+              {error ? "Error" : "Success"}
+            </AlertDialogHeader>
+
             <AlertDialogBody>
               {error ? error : success}
             </AlertDialogBody>
@@ -240,10 +269,10 @@ export default function Home() {
             <AlertDialogFooter>
               <Button colorScheme={error ? 'red' : 'green'} ref={cancelRef} onClick={() => {
                 onClose();
-                if(error) {
+                if (error) {
                   setError(null);
                 }
-                if(success) {
+                if (success) {
                   setSuccess(null);
                 }
               }}>
