@@ -53,6 +53,7 @@ export default function Home() {
   const [contribution, setContribution] = useState(0);
   const [time, setTime] = useState(0);
   const [current, setCurrent] = useState(0);
+  const [isEnded, setIsEnded] = useState(false);
 
   const [kcal, setKcal] = useState(0);
   const [bnb, setBnb] = useState(0);
@@ -121,9 +122,6 @@ export default function Home() {
         })
         contract.methods.weiRaised().call().then(res => {
           setWeiRaised(res);
-        })
-        contract.methods.hardCap().call().then(res => {
-          setHardCap(res);
         })
         contract.methods.hardCap().call().then(res => {
           setHardCap(res);
@@ -223,7 +221,7 @@ export default function Home() {
             <Text fontWeight={600} fontSize={'20px'}>1 $KCAL = $0.0075</Text>
             <Text color={'gray.400'} fontSize={'15px'} fontWeight={'light'}>Buy before it sells out</Text>
             {active && chainId == 97 ? <Box mt={'20px'}>
-              {(time - current) ? <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}><b>Time Left</b>: {time && new Date((time - current).toFixed(0) * 1000).toISOString().substr(11, 8)}</Text> : <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}>Presale is Ended</Text>}
+              {(time - current) > 0 ? <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}><b>Time Left</b>: {time && new Date((time - current).toFixed(0) * 1000).toISOString().substr(11, 8)}</Text> : <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}>Presale is Ended</Text>}
               <Progress value={(((weiRaised / 10 ** 18) * price) / 100000000) * 100} size='lg' colorScheme='cyan' borderRadius={'lg'} />
               <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>${numberWithCommas((weiRaised / 10 ** 18).toFixed(2) * 350)} / ${numberWithCommas((hardCap / 10 ** 18) * 350)}</Text>
               <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>{numberWithCommas(((weiRaised / 10 ** 18) * price).toFixed(2))} $KCAL / 100,000,000 $KCAL</Text>
