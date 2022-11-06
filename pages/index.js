@@ -106,6 +106,7 @@ export default function Home() {
       }
     } else {
       setError(null);
+      onClose();
       (async () => {
         var balance = await library.eth.getBalance(account);
         setBalance(balance);
@@ -277,9 +278,11 @@ export default function Home() {
                 onClose();
                 if (error) {
                   setError(null);
+                  onClose();
                 }
                 if (success) {
                   setSuccess(null);
+                  onClose(null);
                 }
               }}>
                 Ok
