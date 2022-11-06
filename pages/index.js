@@ -152,6 +152,24 @@ export default function Home() {
     })
   }
 
+  function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  function claim() {
+    contract.methods.claimTokens().send({from: account})
+    .on('receipt', receipt => {
+      setSuccess('Successfully claimed token');
+      onOpen();
+      setLoading(false);
+    })
+    .on('error', error => {
+      setError(error.message)
+      onOpen()
+      setLoading(false);
+    })
+  }
+
   return (
     <div>
       <Head>
@@ -176,29 +194,33 @@ export default function Home() {
             {active && chainId == 97 ? <Box mt={'20px'}>
             <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}><b>Time Left</b>: {new Date((time - current).toFixed(0) * 1000).toISOString().substr(11, 8)}</Text>
               <Progress value={(((weiRaised / 10 ** 18) * price) / 100000000) * 100} size='lg' colorScheme='cyan' borderRadius={'lg'}/>
-              <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>{(weiRaised / 10 ** 18).toFixed(2)} BNB / {hardCap / 10 ** 18} BNB</Text>
-              <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>{(weiRaised / 10 ** 18) * price} $KCAL / 100,000,000 $KCAL</Text>
+              <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>${numberWithCommas((weiRaised / 10 ** 18).toFixed(2) * 350)} / ${numberWithCommas((hardCap / 10 ** 18) * 350)}</Text>
+              <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>{numberWithCommas((weiRaised / 10 ** 18) * price)} $KCAL / 100,000,000 $KCAL</Text>
 
               {textError ? <Alert status='error' mt={'10px'} borderRadius={'lg'}>
                 <AlertIcon/>
                 <AlertDescription>{textError}</AlertDescription>
               </Alert> : null }
 
-              <FormControl mt={'20px'}>
-                <FormLabel>Buying ($KCAL)</FormLabel>
-                <Input type={'number'} placeholder={'0'} value={kcal} onChange={() => {
-                  setKcal(event.target.value);
-                  setBnb(event.target.value / price);
-                }}/>
-              </FormControl>
-             
-              <FormControl mt={'10px'}>
-                <FormLabel>Selling (BNB)</FormLabel>
-                <Input type={'number'} placeholder={'0'} value={bnb}/>
-              </FormControl>
+              {(time - current) > 0 ? <Box>
+                <FormControl mt={'20px'}>
+                  <FormLabel>Buying ($KCAL)</FormLabel>
+                  <Input type={'number'} placeholder={'0'} value={kcal} onChange={() => {
+                    setKcal(event.target.value);
+                    setBnb(event.target.value / price);
+                  }}/>
+                </FormControl>
+                
+                <FormControl mt={'10px'}>
+                  <FormLabel>Selling (BNB)</FormLabel>
+                  <Input type={'number'} placeholder={'0'} value={bnb}/>
+                </FormControl>
 
-              <Button colorScheme={'cyan'} mt={'10px'} width={'100%'} onClick={buy} disabled={textError || isLoading} isLoading={isLoading}>Buy $KCAL</Button>
-              <Text fontWeight={'thin'} mt={'20px'}><b>Your Balance:</b> {(contribution / 10 ** 18) * price} $KCAL</Text>
+                <Button colorScheme={'cyan'} mt={'10px'} width={'100%'} onClick={buy} disabled={textError || isLoading} isLoading={isLoading}>Buy $KCAL</Button>
+              </Box>
+              : <Button colorScheme={'cyan'} mt={'10px'} width={'100%'} onClick={claim} disabled={textError || isLoading} isLoading={isLoading}>Claim</Button> }
+              
+              <Text fontWeight={'thin'} mt={'20px'}><b>Your Balance:</b> {numberWithCommas((contribution / 10 ** 18) * price)} $KCAL</Text>
               <Text fontWeight={'thin'}>You can claim token after presale</Text>
             </Box> : <Button colorScheme={'orange'} mt={'10px'} width={'100%'} onClick={connect}>Connect Metamask</Button>}
           </Box>
