@@ -172,6 +172,13 @@ export default function Home() {
         contract.methods.checkContribution(account).call().then(res => {
           setContribution(res);
         })
+        contract.methods.weiRaised().call().then(res => {
+          setWeiRaised(res);
+        })
+        (async () => {
+          var balance = await library.eth.getBalance(account);
+          setBalance(balance);
+        })()
         setLoading(false);
       })
       .on('error', error => {
@@ -199,6 +206,15 @@ export default function Home() {
       })
   }
 
+  function secondsToTime(e){
+    const h = Math.floor(e / 3600).toString().padStart(2,'0'),
+          m = Math.floor(e % 3600 / 60).toString().padStart(2,'0'),
+          s = Math.floor(e % 60).toString().padStart(2,'0');
+    
+    return h + ':' + m + ':' + s;
+    //return `${h}:${m}:${s}`;
+  }
+
   return (
     <div>
       <Head>
@@ -221,7 +237,7 @@ export default function Home() {
             <Text fontWeight={600} fontSize={'20px'}>1 $KCAL = $0.0075</Text>
             <Text color={'gray.400'} fontSize={'15px'} fontWeight={'light'}>Buy before it sells out</Text>
             {active && chainId == 97 ? <Box mt={'20px'}>
-              {(time - current) > 0 ? <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}><b>Time Left</b>: {time && new Date((time - current).toFixed(0) * 1000).toISOString().substr(11, 8)}</Text> : <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}>Presale is Ended</Text>}
+              {time - current > 0 ? <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}><b>Time Left</b>: {time && secondsToTime(time - current)}</Text> : <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}>Presale is Ended</Text>}
               <Progress value={(((weiRaised / 10 ** 18) * price) / 100000000) * 100} size='lg' colorScheme='cyan' borderRadius={'lg'} />
               <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>${numberWithCommas((weiRaised / 10 ** 18).toFixed(2) * 350)} / ${numberWithCommas((hardCap / 10 ** 18) * 350)}</Text>
               <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>{numberWithCommas(((weiRaised / 10 ** 18) * price).toFixed(2))} $KCAL / 100,000,000 $KCAL</Text>
@@ -231,7 +247,7 @@ export default function Home() {
                 <AlertDescription>{textError}</AlertDescription>
               </Alert> : null}
 
-              {(time - current) > 0 ? <Box>
+              {time - current > 0 ? <Box>
                 <FormControl mt={'20px'}>
                   <FormLabel>Buying ($KCAL)</FormLabel>
                   <Input type={'number'} placeholder={'0'} value={kcal} onChange={() => {
