@@ -169,6 +169,7 @@ export default function Home() {
       .on('receipt', receipt => {
         setSuccess('Successfully bought $KCAL worth ' + bnb + ' BNB');
         onOpen();
+        setLoading(false);
         contract.methods.checkContribution(account).call().then(res => {
           setContribution(res);
         })
@@ -178,8 +179,7 @@ export default function Home() {
         (async () => {
           var balance = await library.eth.getBalance(account);
           setBalance(balance);
-        })()
-        setLoading(false);
+        })();
       })
       .on('error', error => {
         setError(error.message)
