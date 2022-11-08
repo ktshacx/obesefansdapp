@@ -249,7 +249,7 @@ export default function Home() {
             {active && chainId == 97 ? <Box mt={'20px'}>
               {time - current > 0 ? <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}><b>Time Left</b>: {time && secondsToTime(time - current)}</Text> : <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}>Presale is Ended</Text>}
               <Progress value={(((weiRaised / 10 ** 18) * price) / 100000000) * 100} size='lg' colorScheme='cyan' borderRadius={'lg'} />
-              <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>${numberWithCommas((weiRaised / 10 ** 18).toFixed(2) * 350)} / ${numberWithCommas((hardCap / 10 ** 18) * 350)}</Text>
+              {hardCap == 0 ? <Skeleton h={'20px'}></Skeleton> : <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>${numberWithCommas((weiRaised / 10 ** 18).toFixed(2) * 350)} / ${numberWithCommas((hardCap / 10 ** 18) * 350)}</Text>}
               <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>{numberWithCommas(((weiRaised / 10 ** 18) * price).toFixed(2))} $KCAL / 100,000,000 $KCAL</Text>
 
               {textError ? <Alert status='error' mt={'10px'} borderRadius={'lg'}>
