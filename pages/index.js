@@ -193,8 +193,13 @@ export default function Home() {
   }
 
   function claim() {
+    setLoading(true);
+    if(contribution > 0){
     contract.methods.claimTokens().send({ from: account })
       .on('receipt', receipt => {
+        contract.methods.checkContribution(account).call().then(res => {
+          setContribution(res);
+        })
         setSuccess('Successfully claimed token');
         onOpen();
         setLoading(false);
@@ -204,6 +209,11 @@ export default function Home() {
         onOpen()
         setLoading(false);
       })
+    }else{
+      setError("You can't claim. Your token balance is 0 $KCAL");
+      onOpen();
+      setLoading(false);
+    }
   }
 
   function secondsToTime(e){
