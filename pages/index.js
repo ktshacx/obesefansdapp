@@ -61,7 +61,7 @@ export default function Home() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef();
 
-  const address = "0x9f4E15A2958eB69A56cD6453A8Dfdd9cf49F8C94";
+  const address = "0xF8409CF8cE10f86dFD544747E701b44043c48628";
 
   async function connect() {
     if (active) {
@@ -151,15 +151,15 @@ export default function Home() {
   }, [bnb])
 
   function buy() {
-    if (kcal < 500) {
-      setTextError('$KCAL must be greater than 500')
+    if (kcal < 12500) {
+      setTextError('$CLRS must be greater than 12500')
       return;
     } else {
       setTextError(null);
     }
 
-    if (bnb > 10) {
-      setTextError('$KCAL must be less than 466850');
+    if (bnb > 100) {
+      setTextError('$CLRS must be less than 125000000');
       return;
     } else {
       setTextError(null);
@@ -210,7 +210,7 @@ export default function Home() {
         setLoading(false);
       })
     }else{
-      setError("You can't claim. Your token balance is 0 $KCAL");
+      setError("You can't claim. Your token balance is 0 $CLRS");
       onOpen();
       setLoading(false);
     }
@@ -243,13 +243,13 @@ export default function Home() {
         <Box borderRadius={'lg'} bgColor={'gray.700'} w={'300px'}>
           <Text fontWeight={600} fontSize={'20px'} background={'cyan.500'} borderRadius={'10px 10px 0px 0px'} p={'10px 20px'}>Private Sale 1</Text>
           <Box display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'} p={'20px'}>
-            <Image src='https://obesefans.com/wp-content/uploads/2022/10/bluetext.png' width={'250px'}></Image>
+            <Image src='https://obesefans.com/assets/img/logo-white.png' width={'250px'}></Image>
             <Text fontWeight={600} fontSize={'20px'}>1 $KCAL = $0.0075</Text>
             <Text color={'gray.400'} fontSize={'15px'} fontWeight={'light'}>Buy before it sells out</Text>
             {active && chainId == 97 ? <Box mt={'20px'}>
               {time - current > 0 ? <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}><b>Time Left</b>: {time && secondsToTime(time - current)}</Text> : <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}>Presale is Ended</Text>}
               <Progress value={(((weiRaised / 10 ** 18) * price) / 100000000) * 100} size='lg' colorScheme='cyan' borderRadius={'lg'} />
-              {hardCap == 0 ? <Skeleton h={'20px'}></Skeleton> : <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>${numberWithCommas((weiRaised / 10 ** 18).toFixed(2) * 350)} / ${numberWithCommas((hardCap / 10 ** 18) * 350)}</Text>}
+              {hardCap == 0 ? <Skeleton h={'20px'}></Skeleton> : <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>${numberWithCommas((weiRaised / 10 ** 18).toFixed(2) * 300)} / ${numberWithCommas((hardCap / 10 ** 18) * 300)}</Text>}
               <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>{numberWithCommas(((weiRaised / 10 ** 18) * price).toFixed(2))} $KCAL / 100,000,000 $KCAL</Text>
 
               {textError ? <Alert status='error' mt={'10px'} borderRadius={'lg'}>
