@@ -167,7 +167,7 @@ export default function Home() {
     setLoading(true);
     contract.methods.buyTokens(account).send({ from: account, value: Math.floor(bnb * 10 ** 18) })
       .on('receipt', receipt => {
-        setSuccess('Successfully bought $KCAL worth ' + bnb + ' BNB');
+        setSuccess('Successfully bought $CLRS worth ' + bnb + ' BNB');
         onOpen();
         setLoading(false);
         contract.methods.checkContribution(account).call().then(res => {
@@ -271,11 +271,11 @@ export default function Home() {
                   <Input type={'number'} placeholder={'0'} value={bnb} />
                 </FormControl>
 
-                <Button colorScheme={'cyan'} mt={'10px'} width={'100%'} onClick={buy} disabled={textError || isLoading} isLoading={isLoading}>Buy $KCAL</Button>
+                <Button colorScheme={'cyan'} mt={'10px'} width={'100%'} onClick={buy} disabled={textError || isLoading} isLoading={isLoading}>Buy $CLRS</Button>
               </Box>
                 : <Button colorScheme={'cyan'} mt={'10px'} width={'100%'} onClick={claim} disabled={textError || isLoading} isLoading={isLoading}>Claim</Button>}
 
-              <Text fontWeight={'thin'} mt={'20px'}><b>Your Balance:</b> {numberWithCommas(((contribution / 10 ** 18) * price).toFixed(2))} $KCAL</Text>
+              <Text fontWeight={'thin'} mt={'20px'}><b>Your Balance:</b> {numberWithCommas(((contribution / 10 ** 18) * price).toFixed(2))} $CLRS</Text>
               <Text fontWeight={'thin'}>You can claim token after presale</Text>
             </Box> : <Button colorScheme={'orange'} mt={'10px'} width={'100%'} onClick={connect}>Connect Metamask</Button>}
           </Box>
