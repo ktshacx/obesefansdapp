@@ -250,7 +250,7 @@ export default function Home() {
               {time - current > 0 ? <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}><b>Time Left</b>: {time && secondsToTime(time - current)}</Text> : <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}>Presale is Ended</Text>}
               <Progress value={(((weiRaised / 10 ** 18) * price) / 100000000) * 100} size='lg' colorScheme='cyan' borderRadius={'lg'} />
               {hardCap == 0 ? <Skeleton h={'20px'}></Skeleton> : <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>${numberWithCommas((weiRaised / 10 ** 18).toFixed(2) * 300)} / ${numberWithCommas((hardCap / 10 ** 18) * 300)}</Text>}
-              <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>{numberWithCommas(((weiRaised / 10 ** 18) * price).toFixed(2))} $KCAL / 100,000,000 $KCAL</Text>
+              <Text align={'center'} mt={'10px'} fontWeight={'thin'} fontSize={'15px'}>{numberWithCommas(((weiRaised / 10 ** 18) * price).toFixed(2))} $CLRS / 700,000,000 $CLRS</Text>
 
               {textError ? <Alert status='error' mt={'10px'} borderRadius={'lg'}>
                 <AlertIcon />
@@ -259,7 +259,7 @@ export default function Home() {
 
               {time - current > 0 ? <Box>
                 <FormControl mt={'20px'}>
-                  <FormLabel>Buying ($KCAL)</FormLabel>
+                  <FormLabel>Buying ($CLRS)</FormLabel>
                   <Input type={'number'} placeholder={'0'} value={kcal} onChange={() => {
                     setKcal(event.target.value);
                     setBnb(event.target.value / price);
@@ -284,7 +284,7 @@ export default function Home() {
       <AlertDialog
         isOpen={isOpen}
         leastDestructiveRef={cancelRef}
-        onClose={onClose}
+        onClose={() => {onClose(); setError(null); setSuccess(null);}}
         closeOnOverlayClick={false}
         closeOnEsc={false}
       >
@@ -307,7 +307,7 @@ export default function Home() {
                 }
                 if (success) {
                   setSuccess(null);
-                  onClose(null);
+                  onClose();
                 }
               }}>
                 Ok
