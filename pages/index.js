@@ -244,7 +244,7 @@ export default function Home() {
           <Text fontWeight={600} fontSize={'20px'} background={'cyan.500'} borderRadius={'10px 10px 0px 0px'} p={'10px 20px'}>Private Sale 1</Text>
           <Box display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'} p={'20px'}>
             <Image src='https://obesefans.com/assets/img/logo-white.png' width={'250px'}></Image>
-            <Text fontWeight={600} fontSize={'20px'}>1 $KCAL = $0.0075</Text>
+            <Text fontWeight={600} fontSize={'20px'}>1 $CLRS = $0.0024</Text>
             <Text color={'gray.400'} fontSize={'15px'} fontWeight={'light'}>Buy before it sells out</Text>
             {active && chainId == 97 ? <Box mt={'20px'}>
               {time - current > 0 ? <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}><b>Time Left</b>: {time && secondsToTime(time - current)}</Text> : <Text align={'center'} fontWeight={'thin'} fontSize={'15px'}>Presale is Ended</Text>}
