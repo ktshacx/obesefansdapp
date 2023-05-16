@@ -61,7 +61,7 @@ export default function Home() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef();
 
-  const address = "0xF079E4Af9cE4285710307a93eb0F5A8643891f68";
+  const address = "0x362c60C5c1a7d1B27dFb3f4159b858dB00365477";
 
   async function connect() {
     if (active) {
